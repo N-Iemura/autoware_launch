@@ -33,6 +33,16 @@
   <!-- Map -->
   <arg name="lanelet2_map_file" default="lanelet2_map.osm" description="lanelet2 map file name"/>
   <arg name="pointcloud_map_file" default="pointcloud_map.pcd" description="pointcloud map file name"/>
+  <arg
+    name="enable_differential_pointcloud_map_visualizer"
+    default="false"
+    description="enable differential pointcloud map visualizer"
+  />
+  <arg
+    name="differential_pointcloud_map_visualizer_param_path"
+    default="$(find-pkg-share autoware_launch)/config/map/differential_pointcloud_map_visualizer.param.yaml"
+    description="parameter file path for differential pointcloud map visualizer"
+  />
   <!-- System -->
   <arg name="system_run_mode" default="online" description="run mode in system"/>
   <arg name="launch_system_monitor" default="true" description="launch system monitor"/>
@@ -84,6 +94,17 @@
   <!-- Map -->
   <group if="$(var launch_map)">
     <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_map_component.launch.xml"/>
+    <node
+      if="$(var enable_differential_pointcloud_map_visualizer)"
+      pkg="autoware_map_loader"
+      exec="autoware_differential_pointcloud_map_visualizer"
+      name="differential_pointcloud_map_visualizer"
+      namespace="map"
+      output="both"
+    >
+      <param from="$(var differential_pointcloud_map_visualizer_param_path)"/>
+      <remap from="output/differential_pointcloud_map" to="differential_pointcloud_map"/>
+    </node>
   </group>
 
   <!-- Sensing -->
